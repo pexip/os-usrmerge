@@ -1,0 +1,65 @@
+#!/usr/bin/perl
+# This program will print the RTLD and shared libraries paths for all
+# architectures.
+# It provides the list of directories that need to be kept up to date
+# in directories_to_merge() in convert-usrmerge and in setup_merged_usr()
+# in debootstrap when new architectures are added to Debian.
+#
+# The command line argument is the path to the debian/sysdeps/ directory
+# of the glibc package. It can be downloaded with the command:
+# git clone --depth=1 https://salsa.debian.org/glibc-team/glibc.git
+
+use warnings;
+use strict;
+use autodie;
+use v5.16;
+
+use File::Slurp;
+use List::Util qw(uniq);
+
+my $sysdeps_dir = $ARGV[0] || 'glibc/debian/sysdeps';
+my @sysdeps_files = glob("$sysdeps_dir/*.mk")
+	or die "FATAL: $sysdeps_dir/*.mk is missing!\n";
+
+my %directories;
+
+foreach my $file (@sysdeps_files) {
+	doit($file);
+}
+
+print "\nconvert-usrmerge and debootstrap should list these directories:\n";
+foreach my $arch (sort keys %directories) {
+	my @list =
+		sort { $a cmp $b }
+		map { s#^/##; $_ }
+		grep { $_ ne '/lib' }
+		map { s#/\$\(DEB_HOST_MULTIARCH\)/.+##; $_ }
+		uniq
+		@{ $directories{$arch} };
+	print "$arch\t@list\n" if @list;
+}
+
+sub doit {
+	my ($file) = @_;
+
+	say "==== $file ====";
+	my @lines = grep { !/^#/ } read_file($file, chomp => 1);
+	my @multilib = map { /\s*\+=\s*(\S+)/; $1 }
+		grep { /^GLIBC_PASSES\b/ } @lines;
+	unshift(@multilib, 'libc');
+
+	foreach my $arch (@multilib) {
+		my ($rtlddir) = map { /=\s*(\S+)/; $1 }
+			grep { /^${arch}_rtlddir\b/ } @lines;
+		my ($slibdir) = map { /=\s*(\S+)/; $1 }
+			grep { /^${arch}_slibdir\b/ } @lines;
+
+		next unless $rtlddir or $slibdir;
+		$rtlddir ||= ''; $slibdir ||= '';
+		say "$arch\tRTLD: $rtlddir\t\tSLIBDIR: $slibdir";
+		my ($dpkg_arch) = $file =~ m#/([^/]+)\.mk$#;
+		push(@{ $directories{$dpkg_arch} }, $rtlddir) if $rtlddir;
+		push(@{ $directories{$dpkg_arch} }, $slibdir) if $slibdir;
+	}
+}
+

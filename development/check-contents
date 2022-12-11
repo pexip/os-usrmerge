@@ -1,0 +1,73 @@
+#!/usr/bin/perl
+# wget http://ftp.it.debian.org/debian/dists/unstable/main/Contents-amd64.gz
+
+use warnings;
+use strict;
+use autodie;
+use feature qw(say);
+
+use Storable;
+
+my $data = read_data();
+
+my (@l1, @l2);
+
+# check all files in /bin /sbin /lib
+foreach (@{$data->{rootfiles}}) {
+	my ($name, $pkg) = @$_;
+
+	# is there one in /usr too?
+	next unless exists $data->{files}->{'usr/' . $name};
+	my $usrpkg = $data->{files}->{'usr/' . $name};
+
+	# and are they in the same package?
+	if ($pkg eq $usrpkg) {
+		push(@l1, [ $name, $pkg ]);
+	} else {
+		push(@l2, [ $name, $pkg, $usrpkg ]);
+	}
+}
+
+say 'Single packages shipping the same file in / and /usr:';
+say "$_->[1]\t$_->[0]" foreach sort { $a->[1] cmp $b->[1] } @l1;
+
+say '';
+say 'Multiple packages shipping the same file in / and /usr:';
+say "$_->[1]\t$_->[0]\t$_->[2]" foreach sort { $a->[1] cmp $b->[1] } @l2;
+
+exit 0;
+
+##############################################################################
+sub read_data {
+	my $cachefile = '/tmp/contents.storable';
+
+	return retrieve($cachefile) if -e $cachefile;
+
+	my $data = read_contents();
+	store($data, $cachefile);
+	return $data;
+}
+
+sub read_contents {
+	my (@rootfiles, %files);
+
+	open(my $fh, 'zcat Contents-amd64.gz |');
+	while (<$fh>) {
+		my ($file, $package) = split;
+		$package =~ s#(^|,)[a-z]+/#$1#g;
+
+		if ($file =~ m#^(?:s?bin|lib|libx?32|lib64)/#) {
+			push(@rootfiles, [$file, $package]);
+		} elsif ($file =~ m#^usr/#) {
+			if (exists $files{$file}) {
+				$files{$file} = $files{$file} . ',' . $package;
+			} else {
+				$files{$file} = $package;
+			}
+		}
+	}
+	close($fh) or die "close: $!";
+
+	return { rootfiles => \@rootfiles, files => \%files };
+}
+

@@ -1,0 +1,313 @@
+usrmerge (35) unstable; urgency=medium
+
+  * Partially revert and further change the fix for #1024596, because it
+    was incomplete and would fail when the directory containing the RTLD
+    (e.g. /lib64) did not exist in /usr. (Closes: #1025926)
+
+ -- Marco d'Itri <md@linux.it>  Mon, 12 Dec 2022 00:36:05 +0100
+
+usrmerge (34) unstable; urgency=medium
+
+  * Stopped creating the empty biarch directories, because glibc >= 2.35-4
+    does that in preinst. (Closes: #1024596)
+  * preinst: use mountpoint(1) to check if /usr is standalone instead
+    if comparing st_dev, because this does not work with BTRFS subvolumes.
+    (Closes: #1023816)
+  * Updated the versioned conflict with kbd. (Closes: #1022936)
+  * Made debian/copyright machine-readable. (Closes: #1025684)
+  * Fixed a typo. (Closes: #1022790)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 11 Dec 2022 18:59:21 +0100
+
+usrmerge (33) unstable; urgency=medium
+
+  * Added a version number to the conflict with cruft. (See #941998.)
+  * convert-usrmerge: stop if /lib/modules/ is a mount point, which is
+    common on User Mode Linux. (Closes: #1021180)
+  * Implemented only for Hurd systems a modified algorithm provided by
+    Samuel Thibault. (Closes: #1020463)
+
+ -- Marco d'Itri <md@linux.it>  Mon, 10 Oct 2022 23:52:46 +0200
+
+usrmerge (32) unstable; urgency=medium
+
+  * convert-usrmerge: fix handling the link X directory case.
+    The case in which the source and destination are a symlink and a
+    directory (or a directory and a symlink) actually was never handled.
+    (Closes: #1020312)
+  * Updated the versioned conflict with libpng12-0. (Closes: #1020549)
+  * Relabel for SELinux the newly created directories and /etc/shells,
+    courtesy of Christian Göttsche.
+
+ -- Marco d'Itri <md@linux.it>  Thu, 29 Sep 2022 05:51:16 +0200
+
+usrmerge (31) unstable; urgency=medium
+
+  [ Luca Boccassi ]
+  * usr-is-merged.preinst: run the check on upgrades too, because something
+    may have un-merged the system since the last install. (See #926699.)
+
+ -- Marco d'Itri <md@linux.it>  Mon, 19 Sep 2022 13:26:09 +0200
+
+usrmerge (30+nmu2) unstable; urgency=medium
+
+  [ Luca Boccassi ]
+  * Non-maintainer upload.
+  * overlayfs: attempt to move directory before bailing out (Closes:
+    #1020228)
+
+  [ Dimitri John Ledkov ]
+  * Update regexp for new (temporary) ldd output
+
+ -- Luca Boccassi <bluca@debian.org>  Sun, 18 Sep 2022 21:20:53 +0100
+
+usrmerge (30+nmu1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * maintainer scripts: shellcheck fixes
+  * maintainer scripts: fix running arm64 on nspawn (Closes: #1019575)
+
+ -- Luca Boccassi <bluca@debian.org>  Sat, 17 Sep 2022 02:12:55 +0100
+
+usrmerge (30) unstable; urgency=medium
+
+  * Use in usrmerge.postinst the same logic to determine if /usr is
+    merged or not that was already being in usr-is-merged.preinst and
+    convert-usrmerge. (Closes: #1019506)
+
+ -- Marco d'Itri <md@linux.it>  Mon, 12 Sep 2022 01:10:54 +0200
+
+usrmerge (29) unstable; urgency=medium
+
+  * Made postinst skip convert-etc-shells too if the flag file is present,
+    to avoid a piuparts failure.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 17 Jul 2022 18:12:29 +0200
+
+usrmerge (28) unstable; urgency=medium
+
+  * Reupload for the buildds.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 17 Jul 2022 11:12:03 +0200
+
+usrmerge (27) unstable; urgency=medium
+
+  * Created a dummy usr-is-merged package which will fail in preinst if
+    the system does not have a merged /usr. (See the TC decision #994388.)
+  * Implemented a flag file to skip the conversion, for the benefit of
+    buildds. (Closes: #1008203)
+  * Made postinst always fail if the conversion is not possible.
+  * Made postinst fail if overlayfs is involved. (Closes: #1008202)
+  * Removed the debconf question: now the conversion is unconditional.
+  * Created a list of files in / to be ignored if also present in /usr, on
+    request of Ubuntu. (Closes: #997866)
+  * Conflict with cruft. (Closes: #1002888)
+
+ -- Marco d'Itri <md@linux.it>  Thu, 14 Jul 2022 23:58:40 +0200
+
+usrmerge (25) unstable; urgency=medium
+
+  * Remove prerm, which has not been needed or even possibly used since
+    usrmerge version 19 started removing /etc/dpkg/dpkg.cfg.d/usrmerge on
+    upgrades. (Closes: #982867)
+  * New debconf translation(s): es. (Closes: #987519)
+
+ -- Marco d'Itri <md@linux.it>  Tue, 27 Apr 2021 01:21:48 +0200
+
+usrmerge (24) unstable; urgency=medium
+
+  * Moved the scripts to /usr/lib/usrmerge/ on request of Ubuntu for better
+    FHS compliance.
+  * README.Debian: removed a reference to /etc/dpkg/dpkg.cfg.d/usrmerge:
+    the file can be ignored since it has been empty or missing since 2016.
+    (Closes: #940077)
+
+ -- Marco d'Itri <md@linux.it>  Sat, 16 Jan 2021 06:02:21 +0100
+
+usrmerge (23) unstable; urgency=medium
+
+  * Converted to dh.
+
+ -- Marco d'Itri <md@linux.it>  Tue, 03 Sep 2019 02:20:46 +0200
+
+usrmerge (22) unstable; urgency=medium
+
+  * Added a version to the conflict with molly-guard (see #914716).
+    (Closes: #914716)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 09 Jun 2019 14:54:21 +0200
+
+usrmerge (21) unstable; urgency=medium
+
+  * Added a version to the conflict with ebtables (see #912046).
+  * Added a versioned conflict with arptables (see #916106).
+
+ -- Marco d'Itri <md@linux.it>  Sun, 17 Feb 2019 17:44:25 +0100
+
+usrmerge (20) unstable; urgency=medium
+
+  * Use dh_perl to add a missing dependency on perl. (Closes: #915883)
+  * Documented that packages can be removed while a conversion is in
+    progress. (Closes: #914409)
+  * Added a conflict with molly-guard, again (see #914716).
+  * Added a conflict with ebtables (see #913883).
+
+ -- Marco d'Itri <md@linux.it>  Sat, 08 Dec 2018 23:37:38 +0100
+
+usrmerge (19) unstable; urgency=medium
+
+  * Added a version to the conflict with safe-rm (see #759410).
+  * Removed the /etc/dpkg/dpkg.cfg.d/usrmerge file which has been empty
+    since version 11.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 30 Sep 2018 19:09:42 +0200
+
+usrmerge (18) unstable; urgency=medium
+
+  * New debconf translation(s): ru. (Closes: #883204)
+
+ -- Marco d'Itri <md@linux.it>  Mon, 16 Jul 2018 03:58:40 +0200
+
+usrmerge (17) unstable; urgency=medium
+
+  * Defer the conversion of temporarily-broken symlinks in subdirectories
+    too, to prevent leaving them broken if the program aborts.
+    (Closes: #848504, #871706)
+  * Added again a version to the conflict with molly-guard (see #837928).
+
+ -- Marco d'Itri <md@linux.it>  Sun, 05 Nov 2017 19:14:38 +0100
+
+usrmerge (16) unstable; urgency=medium
+
+  * Added a version to the conflict with ksh (see #810158).
+
+ -- Marco d'Itri <md@linux.it>  Wed, 31 May 2017 14:37:35 +0200
+
+usrmerge (15) unstable; urgency=medium
+
+  * Updated the version of the conflict with xfslibs-dev, because the
+    package was broken again later (see #766811).
+  * Added a version to the conflict with yp-tools (see #812532).
+
+ -- Marco d'Itri <md@linux.it>  Tue, 21 Mar 2017 23:19:50 +0100
+
+usrmerge (14) unstable; urgency=medium
+
+  * Make convert-usrmerge restore the SELinux context for the newly
+    created top level symlinks. (Closes: #850274)
+
+ -- Marco d'Itri <md@linux.it>  Mon, 27 Feb 2017 02:03:26 +0100
+
+usrmerge (13) unstable; urgency=medium
+
+  * Do not run convert-usrmerge on NFS systems. (Closes: #842145)
+  * Added a version to the conflict with elvis-tiny (see #813857).
+  * Added a versioned conflict with libjson-c-dev (see #843145).
+
+ -- Marco d'Itri <md@linux.it>  Mon, 12 Dec 2016 05:23:20 +0100
+
+usrmerge (12) unstable; urgency=medium
+
+  * Added a conflict with molly-guard. (Closes: #837925)
+  * Updated the versioned conflict with zsh. (Closes: #824205)
+  * New debconf translation(s): pt, de, nl, pt_BR.
+    (Closes: #818636, 818656, 823443, 829342)
+
+ -- Marco d'Itri <md@linux.it>  Thu, 29 Sep 2016 18:42:37 +0200
+
+usrmerge (11) unstable; urgency=medium
+
+  * dpkg.cfg: removed libpng12-0 (see #766809).
+    No dpkg.cfg workarounds are used anymore.
+  * After the conversion, use the new convert-etc-shells program to add
+    to /etc/shells /usr-based paths for each shell in /. (Closes: #817119)
+  * New debconf translation(s): fr. (Closes: #818144)
+
+ -- Marco d'Itri <md@linux.it>  Tue, 15 Mar 2016 08:42:53 +0100
+
+usrmerge (10) unstable; urgency=medium
+
+  * dpkg.cfg: removed open-iscsi and tcsh (see #810276 and #767927).
+  * Ask with debconf if convert-usrmerge should be run. (Closes: #797417)
+  * New debconf translation(s): it.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 28 Feb 2016 02:02:03 +0100
+
+usrmerge (9) unstable; urgency=medium
+
+  * dpkg.cfg: removed acl, policycoreutils and musl-dev (see #767925,
+    #767930 and #766812).
+  * Added conflicts with elvis-tiny and yp-tools (see #813857 and #812532).
+  * Added a version to the conflicts with mksh and zsh (see #807185 and
+    #768079).
+  * Updated the versioned conflict with davfs2, molly-guard and xfslibs-dev
+    (see #812535 and #766811).
+
+ -- Marco d'Itri <md@linux.it>  Wed, 10 Feb 2016 04:56:33 +0100
+
+usrmerge (8) unstable; urgency=medium
+
+  * Added Breaks with older cruft-ng and initramfs-tools.
+    (Closes: #810860, #811317)
+  * dpkg.cfg: removed coreutils.
+  * Added a conflict with older open-vm-tools.
+
+ -- Marco d'Itri <md@linux.it>  Fri, 22 Jan 2016 07:07:50 +0100
+
+usrmerge (7) unstable; urgency=medium
+
+  * On EBUSY, list the services using ProtectSystem.
+  * dpkg.cfg: removed less and libbrlapi-dev.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 16 Jan 2016 03:51:37 +0100
+
+usrmerge (6) unstable; urgency=high
+
+  * Add support for ppc64el to directories_to_merge().
+  * Check for free space in /usr before attempting the conversion.
+  * dpkg.cfg: removed cryptsetup, libusb-0.1-4, xfsdump and xfslibs-dev.
+  * dpkg.cfg: added open-iscsi.
+  * Added a conflict with open-vm-tools.
+  * Added a conflict with older vsearch.
+
+ -- Marco d'Itri <md@linux.it>  Sat, 09 Jan 2016 04:33:13 +0100
+
+usrmerge (5) unstable; urgency=medium
+
+  * Create empty multilib and multiarch library directories.
+    (Closes: #810091)
+  * dpkg.cfg: removed davfs2, kbd and libdm0-dev.
+  * Added a conflict with ksh.
+
+ -- Marco d'Itri <md@linux.it>  Thu, 07 Jan 2016 02:55:40 +0100
+
+usrmerge (4) unstable; urgency=medium
+
+  * Fixed the conversion of symlinks with the same name in / and /usr,
+    which was broken in many cases and broke libpng12-0. (Closes: #809495)
+    The code still does not handle automatically all possible combinations,
+    but we only need it to work around the few buggy packages with
+    duplicated symlinks.
+  * Preinst: check if an initramfs is being used.
+
+ -- Marco d'Itri <md@linux.it>  Mon, 04 Jan 2016 05:12:46 +0100
+
+usrmerge (3) unstable; urgency=medium
+
+  * Added a conflict with mksh (see #807185).
+  * debian/control: add the Homepage field. (Closes: #798056)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 27 Dec 2015 14:26:51 +0100
+
+usrmerge (2) unstable; urgency=medium
+
+  * Uploaded to the archive.
+
+ -- Marco d'Itri <md@linux.it>  Wed, 05 Aug 2015 05:09:52 +0200
+
+usrmerge (1) UNRELEASED; urgency=medium
+
+  * Initial release.
+  * Added a conflict with zsh (see #768079).
+
+ -- Marco d'Itri <md@linux.it>  Tue, 04 Nov 2014 22:42:44 +0100

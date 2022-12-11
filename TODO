@@ -1,0 +1,27 @@
+How to implement race-free replacement of a directory by a symlink:
+
+mount -o bind / /tmp/root
+
+mount -o bind /usr/bin /bin
+mv /tmp/root/bin /tmp/root/bin.old
+ln -s usr/bin /tmp/root/bin
+umount /bin
+rm -rf /tmp/root/bin.old
+
+umount /tmp/root
+
+Is this complexity justified just for convert_directory()?
+
+For some operations there are two possible implementations:
+- cp/rename/symlink: slower but race-free
+- rename/symlink: faster (only metadata operations, as long as / and /usr
+  are on the same file system) but racy
+
+Is it useful to keep the first implementation if we do not also fix
+the directory-to-symlink races?
+
+How to handle the initramfs check in preinst?
+Is asking a debconf question justified if we suspect that there is no
+initramfs?
+Or should we always ask for confirmation if /usr is a standalone filesystem?
+

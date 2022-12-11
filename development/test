@@ -1,0 +1,30 @@
+#!/bin/sh -e
+
+tmp_cleanup() {
+  [ -d "$BASE" ] || return
+  mountpoint -q "$BASE" || return
+  umount -l $BASE
+  rmdir $BASE
+}
+
+trap "tmp_cleanup" 0 1 2 3 15
+
+BASE=$(mktemp -d)
+mount -t tmpfs tmpfs $BASE -o mode=755,size=401276k
+mkdir $BASE/delta/ $BASE/.work/ $BASE/root/
+
+if [ "$1" ]; then
+  base_dir="$1"
+else
+  base_dir='/'
+fi
+
+mount -t overlay overlay $BASE/root/ \
+  -o workdir=$BASE/.work,lowerdir=$base_dir,upperdir=$BASE/delta
+
+systemd-nspawn --setenv=LANG=C.UTF-8 \
+  --tmpfs=/tmp/:mode=1777 \
+  --bind=/var/cache/apt/archives/ \
+  --register=no \
+  --directory=$BASE/root/ || true
+

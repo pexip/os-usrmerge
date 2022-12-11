@@ -1,0 +1,111 @@
+Source: usrmerge
+Section: admin
+Priority: optional
+Maintainer: Marco d'Itri <md@linux.it>
+Standards-Version: 4.6.1.0
+Rules-Requires-Root: no
+Build-Depends: debhelper-compat (= 13)
+Vcs-Git: https://salsa.debian.org/md/usrmerge.git
+Vcs-Browser: https://salsa.debian.org/md/usrmerge
+Homepage: https://wiki.debian.org/UsrMerge
+
+Package: usrmerge
+Architecture: all
+Multi-Arch: foreign
+Provides: usr-is-merged
+Depends: ${misc:Depends}, ${perl:Depends}, libfile-find-rule-perl
+Breaks:
+ cruft-ng (<< 0.4.4~),
+ initramfs-tools (<< 0.121~),
+Conflicts:
+ safe-rm (<< 0.12-6~),
+ ksh (<< 93u+20120801-3.1~),
+ acl (<< 2.2.52-3~),
+ arptables (<< 0.0.4+snapshot20181021-1~),
+ coreutils (<< 8.24-1~),
+ cruft (<< 0.9.44~),
+ cryptsetup (<< 2:1.7.0-1~),
+ davfs2 (<< 1.5.2-1.2~),
+ debianutils (<< 4.5~),
+ ebtables (<< 2.0.10.4+snapshot20181205-1~),
+ elvis-tiny (<< 1.4-24~),
+ kbd (<< 2.0.4-4~),
+ less (<< 481-2~),
+ libbrlapi-dev (<< 5.3.1-1~),
+ libc6 (<< 2.35-4),
+ libc6.1 (<< 2.35-4),
+ libc0.1 (<< 2.35-4),
+ libc0.3 (<< 2.35-4),
+ libdm0-dev,
+ libjson-c-dev (<< 0.12.1-1.1~),
+ libpng12-0 (<< 1.2.54-6~),
+ libusb-0.1-4 (<< 2:0.1.12-28~),
+ mksh (<< 52b-1~),
+ molly-guard (<< 0.7.1+exp1~),
+ musl-dev (<< 1.1.9-1.1~),
+ nano (<< 2.3.99pre3-1~),
+ open-iscsi (<< 2.0.873+git0.3b4b4500-13~),
+ open-vm-tools (<< 2:10.0.5-3227872-2~),
+ policycoreutils (<< 2.4-4~),
+ tcsh (<< 6.18.01-4~),
+ vsearch (<< 1.9.5-2~),
+ xfsdump (<< 3.1.6+nmu1~),
+ xfslibs-dev (<< 4.9.0+nmu1~),
+ yp-tools (<< 3.3-5~),
+ zsh (<< 5.2-4~),
+Description: Convert the system to the merged /usr directories scheme
+ This package will automatically convert the system to the merged
+ /usr directory scheme, in which the /{bin,sbin,lib}/ directories are
+ symlinked to their counterparts in /usr/.
+ .
+ There is no automatic method to restore the precedent configuration, so
+ there is no going back once this package has been installed.
+
+Package: usr-is-merged
+Section: oldlibs
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Breaks:
+ cruft-ng (<< 0.4.4~),
+ initramfs-tools (<< 0.121~),
+Conflicts:
+ safe-rm (<< 0.12-6~),
+ ksh (<< 93u+20120801-3.1~),
+ acl (<< 2.2.52-3~),
+ arptables (<< 0.0.4+snapshot20181021-1~),
+ coreutils (<< 8.24-1~),
+ cruft (<< 0.9.44~),
+ cryptsetup (<< 2:1.7.0-1~),
+ davfs2 (<< 1.5.2-1.2~),
+ debianutils (<< 4.5~),
+ ebtables (<< 2.0.10.4+snapshot20181205-1~),
+ elvis-tiny (<< 1.4-24~),
+ kbd (<< 2.0.4-4~),
+ less (<< 481-2~),
+ libbrlapi-dev (<< 5.3.1-1~),
+ libc6 (<< 2.35-4),
+ libc6.1 (<< 2.35-4),
+ libc0.1 (<< 2.35-4),
+ libc0.3 (<< 2.35-4),
+ libdm0-dev,
+ libjson-c-dev (<< 0.12.1-1.1~),
+ libpng12-0 (<< 1.2.54-6~),
+ libusb-0.1-4 (<< 2:0.1.12-28~),
+ mksh (<< 52b-1~),
+ molly-guard (<< 0.7.1+exp1~),
+ musl-dev (<< 1.1.9-1.1~),
+ nano (<< 2.3.99pre3-1~),
+ open-iscsi (<< 2.0.873+git0.3b4b4500-13~),
+ open-vm-tools (<< 2:10.0.5-3227872-2~),
+ policycoreutils (<< 2.4-4~),
+ tcsh (<< 6.18.01-4~),
+ vsearch (<< 1.9.5-2~),
+ xfsdump (<< 3.1.6+nmu1~),
+ xfslibs-dev (<< 4.9.0+nmu1~),
+ yp-tools (<< 3.3-5~),
+ zsh (<< 5.2-4~),
+Description: Transitional package to assert a merged-/usr system
+ This package can be successfully installed only on merged-/usr systems.
+ .
+ It can be safely removed once no other package depends on it anymore.
