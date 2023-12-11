@@ -1,3 +1,9 @@
+usrmerge (35pexip1) pexip; urgency=medium
+
+  * Prepare Pexip packaging
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Mon, 11 Dec 2023 09:51:28 +0000
+
 usrmerge (35) unstable; urgency=medium
 
   * Partially revert and further change the fix for #1024596, because it
