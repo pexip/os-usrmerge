@@ -1,0 +1,9 @@
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/files
+debian/usr-is-merged.substvars
+debian/usr-is-merged/
+debian/usrmerge.*.debhelper
+debian/usrmerge.debhelper.log
+debian/usrmerge.substvars
+debian/usrmerge/

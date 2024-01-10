@@ -1,4 +1,5 @@
-#!/bin/sh -e
+#!/bin/sh
+set -e
 
 is_fs() {
   local fs_type
@@ -47,6 +48,29 @@ END
   fi
 
   /usr/lib/usrmerge/convert-usrmerge || return $?
+
+  if which update-shells > /dev/null; then
+    update-shells
+  fi
+  /usr/lib/usrmerge/convert-etc-shells || return $?
+}
+
+cleanup_biarch_dirs() {
+  dpkg --compare-versions "$2" lt "36~" || return 0
+
+  # bootstrapping or earlier conversions may have created empty biarch
+  # directories and links. glibc 2.35-4 or later will create them if needed,
+  # so clean up the unused (and unowned) ones
+  local arch_directories="/lib64 /lib32 /libo32 /libx32"
+  for dir in $arch_directories; do
+    [ -e "$dir" ] || continue
+    if ! dpkg-query -S $dir >/dev/null 2>&1; then
+      rm -v $dir
+      if [ -e /usr$dir ] && ! dpkg-query -S /usr$dir >/dev/null 2>&1 ; then
+        rmdir --ignore-fail-on-non-empty -v /usr$dir
+      fi
+    fi
+  done
 }
 
 case "$1" in
@@ -59,7 +83,7 @@ case "$1" in
 	  echo "W: /etc/unsupported-skip-usrmerge-conversion exists." >&2
 	else
 	  maybe_convert "$@" || { echo "E: usrmerge failed." >&2; exit 1; }
-	  /usr/lib/usrmerge/convert-etc-shells
+	  cleanup_biarch_dirs
 	fi
     ;;
 esac

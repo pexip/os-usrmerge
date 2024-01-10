@@ -11,9 +11,6 @@ directories in / and /usr, until they will be fixed.
 * Will usrmerge also merge /usr/bin/ and /usr/sbin/?
 No.
 
-* Is it mandatory to install this package?
-No.
-
 * Does this require systemd?
 No.
 
@@ -61,7 +58,8 @@ directories and the associated symlinks can be safely deleted.
 
 Removal of this package
 ~~~~~~~~~~~~~~~~~~~~~~~
-The package can be removed once the system has been converted.
+The usrmerge package can be removed once the system has been converted,
+and it will be replaced by the empty usr-is-merged package.
 
 Skipping the conversion (UNSUPPORTED)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
