@@ -1,3 +1,37 @@
+usrmerge (37~deb12u1) bookworm; urgency=medium
+
+  * Non-maintainer upload.
+  * Rebuild for bookworm.
+
+ -- Andreas Beckmann <anbe@debian.org>  Wed, 10 Jan 2024 09:07:08 +0100
+
+usrmerge (37) unstable; urgency=medium
+
+  [ Johannes Schauer Marin Rodrigues ]
+  * Use $DPKG_ROOT in usr-is-merged.postinst. (Closes: #1050755)
+
+ -- Marco d'Itri <md@linux.it>  Tue, 29 Aug 2023 02:14:10 +0200
+
+usrmerge (36) unstable; urgency=medium
+
+  * Added code by Andreas Beckmann to clean up the biarch libraries
+    directories when they are not needed. (Closes: #1038853)
+  * Changed postinst to not run convert-etc-shells again on already
+    converted systems and to run update-shells to make sure that the
+    new shells.state file introduced in bookworm is up to date.
+    (Closes: #1033167)
+  * Improved the instructions to deal with a mounted /lib/modules/,
+    which can also happen on some Xen-based systems. (Closes: 1034346)
+  * Greatly improved the error messages when commands execution fails
+    (see #1037362).
+  * Added a versioned conflict with libc-bin, only relevant for the
+    conversion script. (Closes: #1037362)
+  * Added a versioned conflict with dhcpcd. (Closes: #1038832)
+  * Added a versioned conflict with libparted1.8-10. (Closes: #1038832)
+  * Added a versioned conflict with lustre-utils. (Closes: #1038832)
+
+ -- Marco d'Itri <md@linux.it>  Sun, 27 Aug 2023 13:56:49 +0200
+
 usrmerge (35+pexip24u4) pexip-bookworm; urgency=medium
 
   * New versioning scheme

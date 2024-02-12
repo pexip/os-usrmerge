@@ -28,6 +28,8 @@ my %Ignore_In_Root = map { $_ => 1 } qw(
 	/lib/udev/hwdb.bin
 );
 
+$ENV{LC_ALL} = 'C';
+
 check_free_space();
 
 check_overlayfs();
@@ -217,9 +219,11 @@ sub convert_file {
 # To prevent a failure later, the regular files of the libraries used by
 # cp and mv must be converted before of the symlinks that point to them.
 sub early_conversion_files {
+	no autodie qw(close);
+
 	open(my $fh, '-|', 'ldd /bin/cp');
 	my @ldd = <$fh>;
-	close $fh;
+	close $fh or fatal("Failed to execute 'ldd /bin/cp'");
 
 	# the libraries
 	my @list = grep { $_ } map { /^\s+\S+ => (\/\S+) / and $1 } @ldd;
@@ -340,9 +344,9 @@ END
 
 ##############################################################################
 sub check_free_space {
-	local $ENV{LC_ALL} = 'C';
-	my $fh;
+	no autodie qw(close);
 
+	my $fh;
 	open($fh, '-|', 'stat --dereference --file-system --format="%i" /');
 	my $root_id = <$fh>;
 	die "stat / failed" if not defined $root_id;
@@ -361,14 +365,14 @@ sub check_free_space {
 	my $free = $free_blocks * ($bs / 1024);
 	my @dirs = grep { -e $_ } directories_to_merge();
 
-	open($fh, '-|',
-		"du --summarize --no-dereference --total --block-size=1K @dirs");
+	my $cmd = "du --summarize --no-dereference --total --block-size=1K @dirs";
+	open($fh, '-|', $cmd);
 	my $needed;
 	while (<$fh>) {
 		($needed) = /^(\d+)\s+total$/;
 	}
-	close $fh;
-	die "df @dirs failed" if not defined $needed;
+	close $fh or fatal("Failed to execute $cmd");
+	die "$cmd failed" if not defined $needed;
 
 	say "Free space in /usr: $free KB." if $Debug;
 	say "The origin directories (@dirs) require $needed KB." if $Debug;
@@ -380,12 +384,12 @@ sub check_free_space {
 # are movable - we might be running in a container, thus running under overlayfs
 # but still able to do the conversion because the chroot is not overlayed.
 sub check_overlayfs {
-	$ENV{LC_ALL} = 'C';
-	my $fh;
+	no autodie qw(close);
 
+	my $fh;
 	open($fh, '-|', "stat --file-system --format=%T /");
 	my $fs_type = <$fh>;
-	close $fh;
+	close $fh or fatal("Failed to execute stat --file-system --format=%T /");
 	die "stat / failed" if not defined $fs_type;
 	chomp $fs_type;
 	return if $fs_type ne "overlayfs";
@@ -438,12 +442,12 @@ sub check_uml {
 FATAL ERROR:
 
 /lib/modules/ is a mount point.
-Probably this system is using User Mode Linux.
+Probably this system is using User Mode Linux or some variant of Xen.
 
-To continue the conversion please:
-- replace '/lib/modules/' with '/usr/lib/modules/' in /etc/fstab
-- reboot
-- try again
+To continue the conversion please unmount /lib/modules/ (try the command
+'umount -l /lib/modules/') and then try again.
+Do not forget to reboot after the conversion is complete to have it
+mounted again.
 
 END
 	exit(1);
