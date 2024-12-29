@@ -27,15 +27,6 @@ is_merged() {
 fail_if_unmerged() {
   if is_merged; then return; fi
 
-  # Ignore that buildds are not actually converted.
-  # Note that such systems will be *UNSUPPORTED* in the future.
-  if [ -e /etc/unsupported-skip-usrmerge-conversion ] && \
-      grep -q 'this system will not be supported in the future' \
-        /etc/unsupported-skip-usrmerge-conversion; then
-    echo "W: /etc/unsupported-skip-usrmerge-conversion exists." >&2
-    return 0
-  fi
-
   cat << END
 
 
